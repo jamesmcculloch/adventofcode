@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -40,4 +41,25 @@ func LoadBlankLineSeparatedStringsFromFile(filePath string) ([]string, error) {
 	}
 	blocks = append(blocks, currentBlock.String())
 	return blocks, nil
+}
+
+// LoadNumbersFromInput returns all ints in a file given the filepath
+func LoadNumbersFromInput(inputFilePath string) ([]int, error) {
+	bytes, err := ioutil.ReadFile(inputFilePath)
+	if err != nil {
+		return []int{}, err
+	}
+	lines := strings.Split(string(bytes), "\n")
+	numbers := make([]int, len(lines))
+	for index, line := range lines {
+		if line == "" {
+			break
+		}
+		number, err := strconv.Atoi(line)
+		if err != nil {
+			return []int{}, err
+		}
+		numbers[index] = number
+	}
+	return numbers, nil
 }
