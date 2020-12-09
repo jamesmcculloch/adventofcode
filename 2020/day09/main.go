@@ -7,6 +7,21 @@ import (
 	"github.com/jamesmcculloch/adventofcode/utils"
 )
 
+func firstInvalidNumber(xmas []int) (int, int) {
+	for i := 25; i < len(xmas); i++ {
+		valid := isNumberValid(xmas[i-25:i], xmas[i])
+		if !valid {
+			return i, xmas[i]
+		}
+	}
+	return -1, -1
+}
+
+func isNumberValid(numbers []int, target int) bool {
+	_, _, valid := findTwoNumbersThatSumToTarget(numbers, target)
+	return valid
+}
+
 func findTwoNumbersThatSumToTarget(numbers []int, target int) (int, int, bool) {
 	candidates := make(map[int]bool)
 	for _, number := range numbers {
@@ -21,16 +36,6 @@ func findTwoNumbersThatSumToTarget(numbers []int, target int) (int, int, bool) {
 		}
 	}
 	return 0, 0, false
-}
-
-func firstInvalidNumber(xmas []int) (int, int) {
-	for i := 25; i < len(xmas); i++ {
-		_, _, valid := findTwoNumbersThatSumToTarget(xmas[i-25:i], xmas[i])
-		if !valid {
-			return i, xmas[i]
-		}
-	}
-	return -1, -1
 }
 
 func encryptionWeakness(xmas []int, firstInvalidNumber int) int {
