@@ -52,6 +52,7 @@ func LoadNumbersFromInput(inputFilePath string) ([]int, error) {
 	lines := strings.Split(string(bytes), "\n")
 	numbers := make([]int, len(lines))
 	for index, line := range lines {
+		line = strings.TrimSuffix(line, "\r")
 		if line == "" {
 			break
 		}

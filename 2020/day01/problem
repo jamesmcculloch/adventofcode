@@ -36,18 +36,5 @@ In your expense report, what is the product of the three entries that sum to 202
 
 Solutions
 
-Searching for 2 numbers that add to: 2020
-found pair that add to 2020: 861, 1159
-solution 1: 997899
-
-Searching for 2 numbers that add to: 2020 using a map
-found pair that add to 2020: 861, 1159
-solution 1: 997899
-
-Searching for 3 numbers that add to: 2020
-found 3 that add to 2020: 277, 337, 1406
-solution 2: 131248694
-
-Searching for 3 numbers that add to: 2020 with map
-found 3 that add to 2020: 277, 337, 1406
-solution 2: 131248694
+part 1: 997899
+part 2: 131248694
