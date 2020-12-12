@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strconv"
 	"strings"
+
+	"github.com/jamesmcculloch/adventofcode/utils"
 )
 
 type passwordValidator struct {
@@ -105,30 +106,19 @@ func getPasswordsToValidate(candidates []string) ([]passwordValidator, error) {
 	return passwordsToValidate, nil
 }
 
-func readInput(inputFile string) ([]string, error) {
-	bytes, err := ioutil.ReadFile(inputFile)
-	if err != nil {
-		return []string{}, err
-	}
-	return strings.Split(string(bytes), "\r\n"), nil
-}
-
 func main() {
-	lines, err := readInput("input")
+	passwords, err := utils.LoadStringsFromFile("input")
 	if err != nil {
 		fmt.Printf("failed to read input file %s", err.Error())
 		return
 	}
 
-	candidates, err := getPasswordsToValidate(lines)
+	candidates, err := getPasswordsToValidate(passwords)
 	if err != nil {
 		fmt.Printf("failed to generate candidates %s", err.Error())
 		return
 	}
 
-	letterCountPasswordCount := validLetterCountPasswordCount(candidates)
-	fmt.Printf("valid password count using letter count method: %d\r\n", letterCountPasswordCount)
-
-	positionPasswordCount := validPositionPasswordCount(candidates)
-	fmt.Printf("valid password count using letter count method: %d\r\n", positionPasswordCount)
+	fmt.Printf("part 1: %d\r\n", validLetterCountPasswordCount(candidates))
+	fmt.Printf("part 2: %d\r\n", validPositionPasswordCount(candidates))
 }

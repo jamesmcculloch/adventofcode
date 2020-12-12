@@ -109,6 +109,5 @@ Count the number of valid passports - those that have all required fields and va
 
 ---
 
-total passports: 279
 part 1 valid passports: 213
 part 2 valid passports: 147

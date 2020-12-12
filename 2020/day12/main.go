@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math"
-	"strings"
+
+	"github.com/jamesmcculloch/adventofcode/utils"
 )
 
 type ferry struct {
@@ -149,12 +149,10 @@ func (f *ferryWithWayPoint) manhattenDistanceTravelled() int {
 }
 
 func main() {
-	fileBytes, err := ioutil.ReadFile("input")
+	directions, err := utils.LoadStringsFromFile("input")
 	if err != nil {
 		panic(err)
 	}
-	fileString := string(fileBytes)
-	directions := strings.Split(strings.TrimSpace(fileString), "\n")
 
 	ferry := newFerry()
 	ferry.navigate(directions)

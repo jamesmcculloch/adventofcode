@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"strings"
+
+	"github.com/jamesmcculloch/adventofcode/utils"
 )
 
 type waitingArea struct {
@@ -165,12 +165,10 @@ func (wa *waitingArea) adjacentSeatsInDirection(seats []rune, row int, column in
 }
 
 func main() {
-	fileBytes, err := ioutil.ReadFile("input")
+	seatingRows, err := utils.LoadStringsFromFile("input")
 	if err != nil {
 		panic(err)
 	}
-	fileString := string(fileBytes)
-	seatingRows := strings.Split(strings.TrimSpace(fileString), "\n")
 
 	wa := new(seatingRows, rune("L"[0]), rune("#"[0]), rune("."[0]), 4, true)
 

@@ -198,7 +198,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("total passports: %d\n", len(passports))
 	fmt.Printf("part 1 valid passports: %d\n", numberOfValidPassports1(passports))
 	fmt.Printf("part 2 valid passports: %d\n", numberOfValidPassports2(passports))
 }

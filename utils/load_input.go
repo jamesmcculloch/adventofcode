@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bufio"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -10,12 +9,23 @@ import (
 
 // LoadStringsFromFile returns all lines in a file given the filepath
 func LoadStringsFromFile(filePath string) ([]string, error) {
-	fileBytes, err := ioutil.ReadFile(filePath)
+	file, err := os.Open(filePath)
 	if err != nil {
 		return []string{}, err
 	}
-	fileString := string(fileBytes)
-	return strings.Split(strings.TrimSpace(fileString), "\r\n"), nil
+	defer file.Close()
+
+	lines := []string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "" {
+			break
+		}
+
+		lines = append(lines, strings.TrimSuffix(line, "\r"))
+	}
+	return lines, nil
 }
 
 // LoadBlankLineSeparatedStringsFromFile returns the blank line separated blocks in a file as a slice of strings
@@ -44,14 +54,17 @@ func LoadBlankLineSeparatedStringsFromFile(filePath string) ([]string, error) {
 }
 
 // LoadNumbersFromInput returns all ints in a file given the filepath
-func LoadNumbersFromInput(inputFilePath string) ([]int, error) {
-	bytes, err := ioutil.ReadFile(inputFilePath)
+func LoadNumbersFromInput(filePath string) ([]int, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
 		return []int{}, err
 	}
-	lines := strings.Split(string(bytes), "\n")
-	numbers := make([]int, len(lines))
-	for index, line := range lines {
+	defer file.Close()
+
+	numbers := []int{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
 		line = strings.TrimSuffix(line, "\r")
 		if line == "" {
 			break
@@ -60,7 +73,7 @@ func LoadNumbersFromInput(inputFilePath string) ([]int, error) {
 		if err != nil {
 			return []int{}, err
 		}
-		numbers[index] = number
+		numbers = append(numbers, number)
 	}
 	return numbers, nil
 }

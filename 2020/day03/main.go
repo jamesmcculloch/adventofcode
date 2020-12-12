@@ -2,17 +2,15 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"strings"
+
+	"github.com/jamesmcculloch/adventofcode/utils"
 )
 
 func getMapPattern(filepath string) (*geologicalMap, error) {
-	bytes, err := ioutil.ReadFile(filepath)
+	lines, err := utils.LoadStringsFromFile(filepath)
 	if err != nil {
 		return &geologicalMap{}, err
 	}
-	pattern := string(bytes)
-	lines := strings.Split(pattern, "\r\n")
 
 	return &geologicalMap{
 		pattern: lines,
@@ -57,7 +55,7 @@ func main() {
 	}
 
 	numberOfTreeEncountered := puzzleMap.treeCountForRun(3, 1)
-	fmt.Printf("part 1: %d\r\n", numberOfTreeEncountered)
+	fmt.Printf("part 1: %d\n", numberOfTreeEncountered)
 
 	part2Inputs := [][]int{
 		{1, 1},
@@ -70,8 +68,7 @@ func main() {
 	part2Result := 1
 	for _, input := range part2Inputs {
 		numberOfTreeEncountered := puzzleMap.treeCountForRun(input[0], input[1])
-		fmt.Printf("dx: %d, dy: %d, tree count: %d\r\n", input[0], input[1], numberOfTreeEncountered)
 		part2Result *= numberOfTreeEncountered
 	}
-	fmt.Printf("part 2: %d\r\n", part2Result)
+	fmt.Printf("part 2: %d\n", part2Result)
 }

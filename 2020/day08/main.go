@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"strings"
+
+	"github.com/jamesmcculloch/adventofcode/utils"
 )
 
 type gameConsole struct {
@@ -114,12 +114,10 @@ func (g *gameConsole) printRun(instructions []int) {
 }
 
 func main() {
-	fileBytes, err := ioutil.ReadFile("input")
+	instructions, err := utils.LoadStringsFromFile("input")
 	if err != nil {
 		panic(err)
 	}
-	fileString := string(fileBytes)
-	instructions := strings.Split(strings.TrimSpace(fileString), "\n")
 
 	gc := new(instructions)
 

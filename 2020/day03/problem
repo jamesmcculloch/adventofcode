@@ -68,9 +68,4 @@ What do you get if you multiply together the number of trees encountered on each
 ---
 
 part 1: 282
-dx: 1, dy: 1, tree count: 53
-dx: 3, dy: 1, tree count: 282
-dx: 5, dy: 1, tree count: 54
-dx: 7, dy: 1, tree count: 54
-dx: 1, dy: 2, tree count: 22
 part 2: 958815792
