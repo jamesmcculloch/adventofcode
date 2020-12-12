@@ -117,16 +117,16 @@ func (f *ferryWithWayPoint) travel(direction string) {
 	case "W":
 		f.wayPoint.xOffset -= value
 	case "L":
-		f.moveWayPoint(false, value)
+		f.rotateWayPoint(false, value)
 	case "R":
-		f.moveWayPoint(true, value)
+		f.rotateWayPoint(true, value)
 	case "F":
 		f.xDistanceTravelled += f.wayPoint.xOffset * value
 		f.yDistanceTravelled += f.wayPoint.yOffset * value
 	}
 }
 
-func (f *ferryWithWayPoint) moveWayPoint(clockWise bool, magnitude int) {
+func (f *ferryWithWayPoint) rotateWayPoint(clockWise bool, magnitude int) {
 	reflections := []int{-1, 1}
 	if clockWise {
 		reflections = []int{1, -1}
