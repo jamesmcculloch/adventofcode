@@ -76,25 +76,20 @@ func getBusIDsAndOffsets(busIDsNote string) (map[int]int, error) {
 	return busIDs, nil
 }
 
-// too slow
 func part2(busIDsAndOffsets map[int]int, busIDs []int) int {
-	firstBus := busIDs[0]
-	candidate := firstBus
+	// find smallest t such that for all buses this equation holds (t + offset) % busID == 0
+	timestamp := 0
+	multiplier := 1
 
-	for {
-		found := true
-		for bus, offset := range busIDsAndOffsets {
-			busCandidate := candidate + offset
-			if busCandidate%bus != 0 {
-				found = false
-				break
-			}
+	for busID, offset := range busIDsAndOffsets {
+		for (timestamp+offset)%busID != 0 { // solve each equation in turn
+
+			timestamp += multiplier
 		}
-		if found {
-			return candidate
-		}
-		candidate += firstBus
+		multiplier *= busID // solve the next equation whilst making sure the multiplier factor that you add to the timestamp still solves the previous equations
 	}
+
+	return timestamp
 }
 
 func main() {

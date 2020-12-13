@@ -47,6 +47,26 @@ func TestPart2(t *testing.T) {
 			busIDsNote:   "7,13,x,x,59,x,31,19",
 			expectedTime: 1068781,
 		},
+		{
+			busIDsNote:   "17,x,13,19",
+			expectedTime: 3417,
+		},
+		{
+			busIDsNote:   "67,7,59,61",
+			expectedTime: 754018,
+		},
+		{
+			busIDsNote:   "67,x,7,59,61",
+			expectedTime: 779210,
+		},
+		{
+			busIDsNote:   "67,7,x,59,61",
+			expectedTime: 1261476,
+		},
+		{
+			busIDsNote:   "1789,37,47,1889",
+			expectedTime: 1202161486,
+		},
 	}
 
 	for _, testCase := range testCases {
