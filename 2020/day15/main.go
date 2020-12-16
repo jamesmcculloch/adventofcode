@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 
 	"github.com/jamesmcculloch/adventofcode/utils"
 )
@@ -14,15 +12,9 @@ type memoryGame struct {
 }
 
 func newMemoryGame(startingConfig string) (*memoryGame, error) {
-	values := strings.Split(startingConfig, ",")
-
-	startingNumbers := make([]int, len(values))
-	for index, value := range values {
-		number, err := strconv.Atoi(value)
-		if err != nil {
-			return &memoryGame{}, err
-		}
-		startingNumbers[index] = number
+	startingNumbers, err := utils.GetInts(startingConfig, ",")
+	if err != nil {
+		return &memoryGame{}, err
 	}
 
 	return &memoryGame{
