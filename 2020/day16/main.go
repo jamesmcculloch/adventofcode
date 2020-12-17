@@ -227,7 +227,7 @@ func findValidPotentialRules(potentialRules map[string]int, validRuleCount int) 
 	return rules
 }
 
-func part2(rulePositions map[string]int, myTicket ticket) int {
+func productOfDepartueValues(rulePositions map[string]int, myTicket ticket) int {
 	result := 1
 	for rule, position := range rulePositions {
 		if strings.HasPrefix(rule, "departure") {
@@ -250,5 +250,5 @@ func main() {
 
 	rulePositions := findRulePositions(rules, validTickets)
 
-	fmt.Printf("part 2: %d\n", part2(rulePositions, myTicket))
+	fmt.Printf("part 2: %d\n", productOfDepartueValues(rulePositions, myTicket))
 }
