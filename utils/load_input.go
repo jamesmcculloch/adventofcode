@@ -77,3 +77,30 @@ func LoadNumbersFromInput(filePath string) ([]int, error) {
 	}
 	return numbers, nil
 }
+
+// LoadBlankLineSeparatedBlocksOfStringsFromFile returns the blank line separated blocks of strings in a file as a slice of clices of strings
+func LoadBlankLineSeparatedBlocksOfStringsFromFile(filePath string) ([][]string, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return [][]string{}, err
+	}
+	defer file.Close()
+
+	blocks := [][]string{}
+	currentBlock := []string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "" {
+			blocks = append(blocks, currentBlock)
+			currentBlock = []string{}
+			continue
+		}
+
+		currentBlock = append(currentBlock, line)
+	}
+	if len(currentBlock) != 0 {
+		blocks = append(blocks, currentBlock)
+	}
+	return blocks, nil
+}
