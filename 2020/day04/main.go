@@ -145,7 +145,7 @@ func (p *passport) addField(key, value string) {
 }
 
 func loadPassports(filepath string) ([]*passport, error) {
-	file, err := os.Open("input")
+	file, err := os.Open(filepath)
 	if err != nil {
 		return []*passport{}, err
 	}
