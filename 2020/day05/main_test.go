@@ -26,8 +26,10 @@ func TestGetSeatIDFromBoardingPass(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		testOuput := getSeatIDFromBoardingPass(testCase.boardingPass)
+		t.Run(testCase.boardingPass, func(t *testing.T) {
+			testOuput := getSeatIDFromBoardingPass(testCase.boardingPass)
 
-		assert.Equal(t, testCase.expectedSeatID, testOuput)
+			assert.Equal(t, testCase.expectedSeatID, testOuput)
+		})
 	}
 }
