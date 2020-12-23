@@ -8,7 +8,7 @@ import (
 )
 
 func TestPart1(t *testing.T) {
-	game, err := utils.LoadBlankLineSeparatedBlocksOfStringsFromFile("input.sample1")
+	game, err := utils.LoadBlankLineSeparatedBlocksOfStringsFromFile("input.sample")
 	if err != nil {
 		assert.Fail(t, "failed to load test input", err)
 	}
@@ -28,7 +28,7 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	game, err := utils.LoadBlankLineSeparatedBlocksOfStringsFromFile("input.sample1")
+	game, err := utils.LoadBlankLineSeparatedBlocksOfStringsFromFile("input.sample")
 	if err != nil {
 		assert.Fail(t, "failed to load test input", err)
 	}
