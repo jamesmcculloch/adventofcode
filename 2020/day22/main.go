@@ -10,51 +10,87 @@ import (
 	"github.com/jamesmcculloch/adventofcode/utils/stack"
 )
 
-func getDeckOfCards(cards []string) (*queue.IntQueue, error) {
-	deck := &queue.IntQueue{}
+type deckOfCards struct {
+	q *queue.IntQueue
+}
+
+func new() *deckOfCards {
+	return &deckOfCards{
+		q: &queue.IntQueue{},
+	}
+}
+
+func (d *deckOfCards) dealCard() int {
+	nextCard, _ := d.q.Dequeue()
+	return nextCard
+}
+
+func (d *deckOfCards) empty() bool {
+	return d.q.IsEmpty()
+}
+
+func (d *deckOfCards) addCard(card int) {
+	d.q.Enqueue(card)
+}
+
+func (d *deckOfCards) duplicate(numberOfCards int) *deckOfCards {
+	duplicateQueue, _ := d.q.Duplicate(numberOfCards)
+	return &deckOfCards{q: duplicateQueue}
+}
+
+func (d *deckOfCards) string() string {
+	return d.q.String()
+}
+
+func (d *deckOfCards) length() int {
+	return d.q.Length()
+}
+
+func getDeckOfCards(cards []string) (*deckOfCards, error) {
+	deck := new()
 	for _, card := range cards {
 		cardNumber, err := strconv.Atoi(card)
 		if err != nil {
 			return nil, err
 		}
-		deck.Enqueue(cardNumber)
+		deck.addCard(cardNumber)
 	}
 	return deck, nil
 }
 
-func playCombat(player1, player2 *queue.IntQueue) *queue.IntQueue {
-	var winner *queue.IntQueue
+func playCombat(player1, player2 *deckOfCards) *deckOfCards {
+	var winner *deckOfCards
 	for winner == nil {
-		if player1.IsEmpty() {
+		if player1.empty() {
 			winner = player2
 			break
 		}
-		if player2.IsEmpty() {
+		if player2.empty() {
 			winner = player1
 			break
 		}
 
-		player1sCard, _ := player1.Dequeue()
-		player2sCard, _ := player2.Dequeue()
+		player1sCard := player1.dealCard()
+		player2sCard := player2.dealCard()
 
 		if player1sCard > player2sCard {
-			player1.Enqueue(player1sCard)
-			player1.Enqueue(player2sCard)
+			player1.addCard(player1sCard)
+			player1.addCard(player2sCard)
 		} else {
-			player2.Enqueue(player2sCard)
-			player2.Enqueue(player1sCard)
+			player2.addCard(player2sCard)
+			player2.addCard(player1sCard)
 		}
 	}
 	return winner
 }
 
-func determineWinnersScore(player *queue.IntQueue) int {
+func determineWinnersScore(player *deckOfCards) int {
 	stack := *&stack.IntStack{}
 	for {
-		card, err := player.Dequeue()
-		if err != nil {
+		if player.empty() {
 			break
 		}
+		card := player.dealCard()
 		stack.Push(card)
 	}
 
@@ -72,7 +108,7 @@ func determineWinnersScore(player *queue.IntQueue) int {
 	return score
 }
 
-func playRecursiveCombat(player1 *queue.IntQueue, player2 *queue.IntQueue) (*queue.IntQueue, int) {
+func playRecursiveCombat(player1 *deckOfCards, player2 *deckOfCards) (*deckOfCards, int) {
 	previousGameStates := make(map[string]bool)
 	for {
 		gameState := getRoundState(player1, player2)
@@ -81,47 +117,47 @@ func playRecursiveCombat(player1 *queue.IntQueue, player2 *queue.IntQueue) (*que
 		}
 		previousGameStates[gameState] = true
 
-		if player1.IsEmpty() {
+		if player1.empty() {
 			return player2, 2
 		}
-		if player2.IsEmpty() {
+		if player2.empty() {
 			return player1, 1
 		}
 
-		player1sCard, _ := player1.Dequeue()
-		player2sCard, _ := player2.Dequeue()
+		player1sCard := player1.dealCard()
+		player2sCard := player2.dealCard()
 
-		if player1sCard <= player1.Length() && player2sCard <= player2.Length() {
-			player1Copy, _ := player1.Duplicate(player1sCard)
-			player2Copy, _ := player2.Duplicate(player2sCard)
+		if player1sCard <= player1.length() && player2sCard <= player2.length() {
+			player1Copy := player1.duplicate(player1sCard)
+			player2Copy := player2.duplicate(player2sCard)
 
 			_, winnerID := playRecursiveCombat(player1Copy, player2Copy)
 
 			if winnerID == 1 {
-				player1.Enqueue(player1sCard)
-				player1.Enqueue(player2sCard)
+				player1.addCard(player1sCard)
+				player1.addCard(player2sCard)
 			} else {
-				player2.Enqueue(player2sCard)
-				player2.Enqueue(player1sCard)
+				player2.addCard(player2sCard)
+				player2.addCard(player1sCard)
 			}
 			continue
 		}
 
 		if player1sCard > player2sCard {
-			player1.Enqueue(player1sCard)
-			player1.Enqueue(player2sCard)
+			player1.addCard(player1sCard)
+			player1.addCard(player2sCard)
 		} else {
-			player2.Enqueue(player2sCard)
-			player2.Enqueue(player1sCard)
+			player2.addCard(player2sCard)
+			player2.addCard(player1sCard)
 		}
 	}
 }
 
-func getRoundState(player1 *queue.IntQueue, player2 *queue.IntQueue) string {
+func getRoundState(player1 *deckOfCards, player2 *deckOfCards) string {
 	var sb strings.Builder
-	sb.WriteString(player1.String())
+	sb.WriteString(player1.string())
 	sb.WriteString(" ")
-	sb.WriteString(player2.String())
+	sb.WriteString(player2.string())
 	return sb.String()
 }
 
