@@ -7,9 +7,9 @@ import (
 	"github.com/jamesmcculloch/adventofcode/utils"
 )
 
-func firstInvalidNumber(xmas []int) (int, int) {
-	for i := 25; i < len(xmas); i++ {
-		valid := isNumberValid(xmas[i-25:i], xmas[i])
+func firstInvalidNumber(xmas []int, preamble int) (int, int) {
+	for i := preamble; i < len(xmas); i++ {
+		valid := isNumberValid(xmas[i-preamble:i], xmas[i])
 		if !valid {
 			return i, xmas[i]
 		}
@@ -76,7 +76,7 @@ func main() {
 		panic(err)
 	}
 
-	_, invalidNumber := firstInvalidNumber(xmas)
+	_, invalidNumber := firstInvalidNumber(xmas, 25)
 	fmt.Printf("part 1: %d\n", invalidNumber)
 	fmt.Printf("part 2: %d\n", encryptionWeakness(xmas, invalidNumber))
 }
