@@ -3,6 +3,7 @@ package main
 import (
 	"testing"
 
+	"github.com/jamesmcculloch/adventofcode/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,4 +38,31 @@ func TestParseInstruction(t *testing.T) {
 		assert.Equal(t, testCase.expectedOperation, operation)
 		assert.Equal(t, testCase.expectedArgument, argument)
 	}
+}
+
+func TestPart1(t *testing.T) {
+	instructions, err := utils.LoadStringsFromFile("input.sample")
+	if err != nil {
+		assert.Fail(t, "failed to load input sample", err)
+	}
+
+	gc := new(instructions)
+
+	gc.run()
+
+	assert.Equal(t, 5, gc.accumulator)
+}
+
+func TestPart2(t *testing.T) {
+	instructions, err := utils.LoadStringsFromFile("input.sample")
+	if err != nil {
+		assert.Fail(t, "failed to load input sample", err)
+	}
+
+	gc := new(instructions)
+	instructionsRun, _ := gc.run()
+	gc.reset()
+	_, accumulatorOnceFixed := fixCorruptedInstruction(gc, instructionsRun)
+
+	assert.Equal(t, 8, accumulatorOnceFixed)
 }
