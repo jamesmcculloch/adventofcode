@@ -4,8 +4,19 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/jamesmcculloch/adventofcode/utils"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestPart1(t *testing.T) {
+	joltages, err := utils.LoadNumbersFromInput("input.sample")
+	if err != nil {
+		assert.Fail(t, "failed to load input sample", err)
+	}
+	sort.Ints(joltages)
+
+	assert.Equal(t, 220, part1(joltages))
+}
 
 func TestValidConnections(t *testing.T) {
 	testCases := []struct {

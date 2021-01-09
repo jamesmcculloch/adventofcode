@@ -7,11 +7,18 @@ import (
 	"github.com/jamesmcculloch/adventofcode/utils"
 )
 
+func part1(adapters []int) int {
+	oneJoltDiffs, threeJoltDiffs := getJoltageDifferenceCounts(adapters)
+
+	return oneJoltDiffs * threeJoltDiffs
+}
+
 func getJoltageDifferenceCounts(adapters []int) (int, int) {
 	deviceJoltage := adapters[len(adapters)-1] + 3
 	adapters = append(adapters, deviceJoltage)
 	oneJoltDiffs := 0
 	threeJoltDiffs := 0
+	adapters = append([]int{0}, adapters...)
 	chargingOutlet := adapters[0]
 	currentTargetAdapter := chargingOutlet
 	for i := 1; i < len(adapters); i++ {
@@ -25,12 +32,6 @@ func getJoltageDifferenceCounts(adapters []int) (int, int) {
 		currentTargetAdapter = adapters[i]
 	}
 	return oneJoltDiffs, threeJoltDiffs
-}
-
-func part1(adapters []int) int {
-	oneJoltDiffs, threeJoltDiffs := getJoltageDifferenceCounts(adapters)
-
-	return oneJoltDiffs * threeJoltDiffs
 }
 
 func totalValidConnections(adapters []int) int {
