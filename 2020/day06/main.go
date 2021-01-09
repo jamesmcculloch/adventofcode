@@ -1,34 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+
+	"github.com/jamesmcculloch/adventofcode/utils"
 )
-
-func loadGroups(filePath string) ([][]string, error) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return [][]string{}, err
-	}
-	defer file.Close()
-
-	blocks := [][]string{}
-	currentBlock := []string{}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line == "" {
-			blocks = append(blocks, currentBlock)
-			currentBlock = []string{}
-			continue
-		}
-
-		currentBlock = append(currentBlock, line)
-	}
-	blocks = append(blocks, currentBlock)
-	return blocks, nil
-}
 
 func totalDistinctAnswerForGroups(groups [][]string) int {
 	total := 0
@@ -85,7 +61,7 @@ func totalSharedAnswerForGroup(group []string) int {
 }
 
 func main() {
-	groups, err := loadGroups("input")
+	groups, err := utils.LoadBlankLineSeparatedBlocksOfStringsFromFile("input")
 	if err != nil {
 		panic(err)
 	}
