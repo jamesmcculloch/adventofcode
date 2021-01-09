@@ -13,7 +13,7 @@ type luggageProcessor struct {
 	totalBagSize      map[string]int
 }
 
-func new(targetBag string) *luggageProcessor {
+func new() *luggageProcessor {
 	l := &luggageProcessor{}
 	l.rules = make(map[string]map[string]int)
 
@@ -135,7 +135,7 @@ func main() {
 	}
 
 	targetBag := "shiny gold"
-	lp := new(targetBag)
+	lp := new()
 	lp.populateRules(rules)
 
 	fmt.Printf("part 1: %d\n", lp.totalBagsContainingTarget(targetBag))
