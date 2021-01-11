@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/jamesmcculloch/adventofcode/utils"
@@ -20,15 +21,12 @@ func TestPart1(t *testing.T) {
 	findNumberOfMatchingEdges(imageTiles, mapping)
 
 	edgeTiles := findEdgeTiles(imageTiles)
-	for _, tile := range edgeTiles {
-		tile.print()
-	}
 
 	assert.Equal(t, 4, len(edgeTiles))
 	assert.Equal(t, 20899048083289, productOfEdgeTileIDs(edgeTiles))
 }
 
-func TestAssembleTiles(t *testing.T) {
+func TestWaterRoughness(t *testing.T) {
 	tiles, err := utils.LoadBlankLineSeparatedBlocksOfStringsFromFile("input.sample")
 	if err != nil {
 		panic(err)
@@ -43,7 +41,12 @@ func TestAssembleTiles(t *testing.T) {
 	edgeTiles := findEdgeTiles(imageTiles)
 
 	image := assembleTiles(edgeTiles, imageTiles)
-
-	image.print()
-	assert.True(t, false)
+	seaMonster := []string{
+		"                  # ",
+		"#    ##    ##    ###",
+		" #  #  #  #  #  #   ",
+	}
+	picture := image.formPicture()
+	fmt.Printf("picture: %v\n", picture)
+	assert.Equal(t, 273, waterRoughness(picture, seaMonster))
 }

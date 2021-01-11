@@ -224,7 +224,6 @@ func assembleTilesFromTile(image image, x, y int, tileForNeighbours *imageTile) 
 	} else {
 		nextY++
 	}
-	// fmt.Printf("nextX: %d, nextY: %d, tileForNeighbours: %d\n", nextX, nextY, tileForNeighbours.id)
 
 	for _, neighbour := range tileForNeighbours.potentialAdjacentTiles {
 		for _, orientedNeighbour := range neighbour.orientations() {
@@ -232,8 +231,6 @@ func assembleTilesFromTile(image image, x, y int, tileForNeighbours *imageTile) 
 				if nextX == 0 || image[nextX-1][nextY].edges()[2] == orientedNeighbour.edges()[0] {
 					if nextY == 0 || image[nextX][nextY-1].edges()[1] == orientedNeighbour.edges()[3] {
 						image[nextX][nextY] = &orientedNeighbour
-						// fmt.Printf("placing: x: %d, y: %d\n", nextX, nextY)
-						// image.printIDs()
 						if assembleTilesFromTile(image, nextX, nextY, &orientedNeighbour) {
 							return true
 						}
@@ -242,8 +239,6 @@ func assembleTilesFromTile(image image, x, y int, tileForNeighbours *imageTile) 
 			}
 		}
 	}
-	// fmt.Printf("failed: x: %d, y: %d\n", x, y)
-	// image.printIDs()
 	return false
 }
 
@@ -260,14 +255,6 @@ func tileUsed(image image, tileID, x, y int) bool {
 
 type image [][]*imageTile
 
-func (i image) print() {
-	for _, row := range i {
-		for _, tile := range row {
-			tile.print()
-		}
-	}
-}
-
 func (i image) printIDs() {
 	for _, row := range i {
 		for _, tile := range row {
@@ -282,6 +269,20 @@ func (i image) printIDs() {
 	fmt.Println()
 }
 
+func (i image) formPicture() *imageTile {
+	picture := make([]string, len(i)*(len(i[0][0].image)-2))
+	for i, row := range i {
+		for _, tile := range row {
+			for k, line := range tile.image {
+				if k != 0 && k != len(tile.image)-1 {
+					picture[(i*(len(tile.image)-2))+k-1] += line[1 : len(line)-1]
+				}
+			}
+		}
+	}
+	return &imageTile{image: picture}
+}
+
 func emptyImage(tiles []*imageTile) image {
 	length := int(math.Sqrt(float64(len(tiles))))
 	image := make([][]*imageTile, length)
@@ -292,12 +293,46 @@ func emptyImage(tiles []*imageTile) image {
 	return image
 }
 
-func idTileMapping(tiles []*imageTile) map[int]*imageTile {
-	mapping := make(map[int]*imageTile)
-	for _, tile := range tiles {
-		mapping[tile.id] = tile
+func waterRoughness(picture *imageTile, seaMonster []string) int {
+	seaMonsterCount := 0
+	for _, orientation := range picture.orientations() {
+		for i := 0; i < len(orientation.image)-len(seaMonster); i++ {
+			for j := 0; j < len(orientation.image[0])-len(seaMonster[0]); j++ {
+				if foundSeaMonster(orientation.image, i, j, seaMonster) {
+					seaMonsterCount++
+				}
+			}
+		}
+		if seaMonsterCount > 0 {
+			break
+		}
 	}
-	return mapping
+	return countElements(picture.image) - (seaMonsterCount * countElements(seaMonster))
+}
+
+func foundSeaMonster(image []string, x, y int, seaMonster []string) bool {
+	for i, row := range seaMonster {
+		for j, element := range row {
+			if element == '#' {
+				if image[x+i][y+j] != '#' {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+func countElements(image []string) int {
+	count := 0
+	for _, row := range image {
+		for _, element := range row {
+			if element == '#' {
+				count++
+			}
+		}
+	}
+	return count
 }
 
 func main() {
@@ -315,4 +350,13 @@ func main() {
 	edgeTiles := findEdgeTiles(imageTiles)
 
 	fmt.Printf("part 1: %d\n", productOfEdgeTileIDs(edgeTiles))
+
+	image := assembleTiles(edgeTiles, imageTiles)
+	seaMonster := []string{
+		"                  # ",
+		"#    ##    ##    ###",
+		" #  #  #  #  #  #   ",
+	}
+
+	fmt.Printf("part 2: %d\n", waterRoughness(image.formPicture(), seaMonster))
 }
