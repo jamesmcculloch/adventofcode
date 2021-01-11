@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -12,31 +13,38 @@ type imageTile struct {
 	id    int
 	image []string
 
-	edges       []string
-	edgeMatched map[string]bool
+	edgeMatched            map[string]bool
+	potentialAdjacentTiles []*imageTile
 }
 
-func (t *imageTile) setEdges() {
-	t.edges = append(t.edges, t.image[0])
-
-	t.edges = append(t.edges, t.image[len(t.image)-1])
-
-	left := ""
-	for i := 0; i < len(t.image); i++ {
-		left += string(t.image[i][0])
+func (t *imageTile) column(i int) string {
+	imageColumn := ""
+	for _, s := range t.image {
+		imageColumn += string(s[i])
 	}
-	t.edges = append(t.edges, left)
+	return imageColumn
+}
 
-	right := ""
-	for i := 0; i < len(t.image); i++ {
-		right += string(t.image[i][len(t.image[0])-1])
-	}
-	t.edges = append(t.edges, right)
+func (t *imageTile) edges() []string {
+	return []string{t.image[0], t.column(len(t.image[0]) - 1), t.image[len(t.image)-1], t.column(0)}
+}
 
-	t.edgeMatched = make(map[string]bool)
-	for _, edge := range t.edges {
-		t.edgeMatched[edge] = false
+func (t imageTile) orientations() []imageTile {
+	orientations := make([]imageTile, 8)
+	for r := 0; r < 8; r += 2 {
+		for _, row := range t.image {
+			orientations[r].image = append(orientations[r].image, reverse(row))
+		}
+		orientations[r].id = t.id
+		orientations[r].potentialAdjacentTiles = t.potentialAdjacentTiles
+		for i := range t.image {
+			orientations[r+1].image = append(orientations[r+1].image, reverse(t.column(i)))
+		}
+		orientations[r+1].potentialAdjacentTiles = t.potentialAdjacentTiles
+		orientations[r+1].id = t.id
+		t = orientations[r+1]
 	}
+	return orientations
 }
 
 func (t *imageTile) print() {
@@ -51,13 +59,9 @@ func load(tiles [][]string) []*imageTile {
 	imageTiles := make([]*imageTile, len(tiles))
 	for index, tile := range tiles {
 		newTile := &imageTile{}
-
 		newTile.id = getID(tile[0])
-
 		newTile.image = getImage(tile[1:])
-
-		newTile.setEdges()
-
+		newTile.edgeMatched = map[string]bool{}
 		imageTiles[index] = newTile
 	}
 
@@ -96,8 +100,7 @@ func edgeToTileMapping(tiles []*imageTile) map[string][]*imageTile {
 }
 
 func addEdgesToMapping(mapping map[string][]*imageTile, tile *imageTile) {
-
-	for _, edge := range tile.edges {
+	for _, edge := range tile.edges() {
 		addEdgeToMapping(mapping, edge, tile)
 	}
 }
@@ -136,7 +139,7 @@ func findNumberOfMatchingEdges(tiles []*imageTile, edgeMapping map[string][]*ima
 }
 
 func updateTilesWithMatchingEdges(tile *imageTile, edgeMapping map[string][]*imageTile) {
-	for _, edge := range tile.edges {
+	for _, edge := range tile.edges() {
 		matched := updateTilesForMatchingEdge(tile, edge, edgeMapping, false)
 		if !matched {
 			updateTilesForMatchingEdge(tile, edge, edgeMapping, true)
@@ -153,6 +156,7 @@ func updateTilesForMatchingEdge(tile *imageTile, edge string, edgeMapping map[st
 		for _, tileWithEdge := range tilesWithEdge {
 			if tileWithEdge != tile {
 				tile.edgeMatched[edge] = true
+				tile.potentialAdjacentTiles = append(tile.potentialAdjacentTiles, tileWithEdge)
 				return true
 			}
 		}
@@ -165,7 +169,7 @@ func findEdgeTiles(tiles []*imageTile) []*imageTile {
 
 	for _, tile := range tiles {
 		matchedCount := 0
-		for _, edge := range tile.edges {
+		for _, edge := range tile.edges() {
 			if tile.edgeMatched[edge] {
 				matchedCount++
 			}
@@ -184,6 +188,116 @@ func productOfEdgeTileIDs(edges []*imageTile) int {
 		product *= tile.id
 	}
 	return product
+}
+
+func assembleTiles(edgeTiles []*imageTile, tiles []*imageTile) image {
+
+	for _, edgeTile := range edgeTiles {
+		for _, tile := range edgeTile.orientations() {
+			image := emptyImage(tiles)
+			x := 0
+			y := 0
+			image[x][y] = &tile
+			if assembleTilesFromTile(image, x, y, &tile) {
+				return image
+			}
+		}
+	}
+
+	return image{}
+}
+
+func assembleTilesFromTile(image image, x, y int, tileForNeighbours *imageTile) bool {
+	if x == len(image)-1 && y == len(image)-1 {
+		return true
+	}
+
+	if y == len(image)-1 {
+		tileForNeighbours = image[x][0]
+	}
+
+	nextX := x
+	nextY := y
+	if y == len(image)-1 {
+		nextY = 0
+		nextX++
+	} else {
+		nextY++
+	}
+	// fmt.Printf("nextX: %d, nextY: %d, tileForNeighbours: %d\n", nextX, nextY, tileForNeighbours.id)
+
+	for _, neighbour := range tileForNeighbours.potentialAdjacentTiles {
+		for _, orientedNeighbour := range neighbour.orientations() {
+			if !tileUsed(image, orientedNeighbour.id, x, y) {
+				if nextX == 0 || image[nextX-1][nextY].edges()[2] == orientedNeighbour.edges()[0] {
+					if nextY == 0 || image[nextX][nextY-1].edges()[1] == orientedNeighbour.edges()[3] {
+						image[nextX][nextY] = &orientedNeighbour
+						// fmt.Printf("placing: x: %d, y: %d\n", nextX, nextY)
+						// image.printIDs()
+						if assembleTilesFromTile(image, nextX, nextY, &orientedNeighbour) {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	// fmt.Printf("failed: x: %d, y: %d\n", x, y)
+	// image.printIDs()
+	return false
+}
+
+func tileUsed(image image, tileID, x, y int) bool {
+	for row := 0; row <= x; row++ {
+		for column := 0; column <= y; column++ {
+			if tileID == image[x][y].id {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+type image [][]*imageTile
+
+func (i image) print() {
+	for _, row := range i {
+		for _, tile := range row {
+			tile.print()
+		}
+	}
+}
+
+func (i image) printIDs() {
+	for _, row := range i {
+		for _, tile := range row {
+			if tile == nil {
+				fmt.Print("nil ")
+			} else {
+				fmt.Printf("%d ", tile.id)
+			}
+		}
+		fmt.Println()
+	}
+	fmt.Println()
+}
+
+func emptyImage(tiles []*imageTile) image {
+	length := int(math.Sqrt(float64(len(tiles))))
+	image := make([][]*imageTile, length)
+	for i := 0; i < length; i++ {
+		imageRow := make([]*imageTile, length)
+		image[i] = imageRow
+	}
+	return image
+}
+
+func idTileMapping(tiles []*imageTile) map[int]*imageTile {
+	mapping := make(map[int]*imageTile)
+	for _, tile := range tiles {
+		mapping[tile.id] = tile
+	}
+	return mapping
 }
 
 func main() {

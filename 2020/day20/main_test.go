@@ -27,3 +27,23 @@ func TestPart1(t *testing.T) {
 	assert.Equal(t, 4, len(edgeTiles))
 	assert.Equal(t, 20899048083289, productOfEdgeTileIDs(edgeTiles))
 }
+
+func TestAssembleTiles(t *testing.T) {
+	tiles, err := utils.LoadBlankLineSeparatedBlocksOfStringsFromFile("input.sample")
+	if err != nil {
+		panic(err)
+	}
+
+	imageTiles := load(tiles)
+
+	mapping := edgeToTileMapping(imageTiles)
+
+	findNumberOfMatchingEdges(imageTiles, mapping)
+
+	edgeTiles := findEdgeTiles(imageTiles)
+
+	image := assembleTiles(edgeTiles, imageTiles)
+
+	image.print()
+	assert.True(t, false)
+}
