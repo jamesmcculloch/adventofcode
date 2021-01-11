@@ -42,7 +42,7 @@ This was an interesting puzzle in which I used `queues`, `stacks` and `recursion
 
 ### Day 24
 
-Pen and paper saved the day as my doodling help me work out the geometry of hexagons.
+Interesting problem that required you to work out the basic geometry of hexagons and how they can fit together.
 
 ## Day structure 
 
